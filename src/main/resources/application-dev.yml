@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: referrals-gateway
+
+  # Opción recomendada: opcional y con hostname correcto
+  config:
+    import: "optional:configserver:http://config-server:8888"
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+    gateway:
+      routes:
+        - id: serv-admin
+          uri: http://referralsadmin:8018
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=1
+        - id: serv-pay
+          uri: http://referralspay:8014
+          predicates:
+            -  Path=/pay/**
+          filters:
+            - StripPrefix=1
+  servlet:
+   multipart:
+    enabled: true
+    max-file-size: 5MB
+    max-request-size: 5MB
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://referralsserver:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+          #filters:
+           # - name: RequestRateLimiter
+ #               redis-rate-limiter.replenishRate: 6
+#
+   #             redis-rate-limiter.burstCapacity: 6
+  #          # JWT filter opcional
+            # - name: JwtAuthenticationFilter
+
+# Redis opcional si quieres rate limiter distribuido
+# spring:
+#   redis:
+#     host: localhost
+#     port: 6379
