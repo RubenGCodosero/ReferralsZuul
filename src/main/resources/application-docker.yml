@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: referrals-gateway
+
+  cloud:
+    compatibility-verifier:
+      enabled: false               # desactiva la verificación de compatibilidad Boot/Cloud
+    config:
+      enabled: false
+
+    netflix:
+      eureka:
+        client:
+          service-url:
+            defaultZone: http://referralsserver:8761/eureka
+          register-with-eureka: true
+          fetch-registry: true
+
+    gateway:
+      routes:
+        - id: referalsadmin
+          uri: lb://REFERRALSADMIN #http://referralsAdmin:8018
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=1
+          #filters:
+           # - name: RequestRateLimiter
+ #               redis-rate-limiter.replenishRate: 6
+#
+   #             redis-rate-limiter.burstCapacity: 6
+  #          # JWT filter opcional
+            # - name: JwtAuthenticationFilter
+
+# Redis opcional si quieres rate limiter distribuido
+# spring:
+#   redis:
+#     host: localhost
+#     port: 6379
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://referralsserver:8761/eureka
+    fetchRegistry: true
+    registerWithEureka: true
